@@ -9,14 +9,14 @@ class AppSubmenu extends Component {
         items: null,
         onMenuItemClick: null,
         root: false
-    }
+    };
 
     static propTypes = {
         className: PropTypes.string,
         items: PropTypes.array,
         onMenuItemClick: PropTypes.func,
         root: PropTypes.bool
-    }
+    };
     
     constructor(props) {
         super(props);
@@ -83,12 +83,12 @@ export class AppMenu extends Component {
     static defaultProps = {
         model: null,
         onMenuItemClick: null
-    }
+    };
 
     static propTypes = {
         model: PropTypes.array,
         onMenuItemClick: PropTypes.func
-    }
+    };
 
     render() {
         return <div className="menu"><AppSubmenu items={this.props.model} className="layout-main-menu" onMenuItemClick={this.props.onMenuItemClick} root={true}/></div>
