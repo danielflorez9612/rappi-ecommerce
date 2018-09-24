@@ -13,6 +13,7 @@ import './layout/layout.css';
 import './App.css';
 import categories from './jsonfiles/categories';
 import ProductTable from "./components/ProductTable";
+import Cart from "./components/Cart";
 
 class App extends Component {
 
@@ -95,7 +96,8 @@ class App extends Component {
         }
     }
     createMenu() {
-        this.menu = this.mapCategories(categories.categories)
+        this.menu = [{label: 'Mi carrito de compras', command:() => {window.location = '#/carrito/ver'}}];
+        this.menu = this.menu.concat(this.mapCategories(categories.categories));
     }
 
     addClass(element, className) {
@@ -142,6 +144,7 @@ class App extends Component {
                 <div ref={(el) => this.sidebar = el} className={sidebarClassName} onClick={this.onSidebarClick}>
 
                     <ScrollPanel ref={(el) => this.layoutMenuScroller = el} style={{height:'100%'}}>
+
                         <div className="layout-sidebar-scroll-content" >
                             <div className="layout-logo" onClick={e=> window.location=''}>
                                 <img alt="Logo" src={logo} />
@@ -154,6 +157,7 @@ class App extends Component {
 
                 <div className="layout-main">
                     <Route path="/" exact component={Dashboard} />
+                    <Route path="/carrito/ver" exact component={Cart} />
                     <Route path="/:subId" exact component={ProductTable} />
                 </div>
             </div>
