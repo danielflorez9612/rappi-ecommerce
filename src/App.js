@@ -12,6 +12,7 @@ import 'fullcalendar/dist/fullcalendar.css';
 import './layout/layout.css';
 import './App.css';
 import categories from './jsonfiles/categories';
+import ProductTable from "./components/ProductTable";
 
 class App extends Component {
 
@@ -81,14 +82,13 @@ class App extends Component {
             })
         }
     }
-    mapCategories(array, currentVal = "") {
+    mapCategories(array) {
         if(array) {
             return  array.map(value => {
-                const nextVal = currentVal+"/"+value.id;
-                const items = this.mapCategories(value.sublevels, nextVal);
+                const items = this.mapCategories(value.sublevels);
                 let command =null;
                 if(!items) {
-                    command = () => {window.location = '#'+nextVal}
+                    command = () => {window.location = '#/'+value.id}
                 }
                 return {label: value.name, items: items, command: command}
             });
@@ -154,9 +154,8 @@ class App extends Component {
 
                 <div className="layout-main">
                     <Route path="/" exact component={Dashboard} />
+                    <Route path="/:subId" exact component={ProductTable} />
                 </div>
-
-
             </div>
         );
     }

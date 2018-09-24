@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {InputText} from 'primereact/inputtext';
 import PropTypes from 'prop-types';
 
 export class AppTopbar extends Component {
