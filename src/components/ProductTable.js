@@ -12,9 +12,12 @@ class ProductTable extends Component{
             dataViewValue:[],
             layout: 'list',
             sortOptions: [
-                {label: 'Newest First', value: '!year'},
-                {label: 'Oldest First', value: 'year'},
-                {label: 'Brand', value: 'brand'}
+                {label: 'Más económicos primero', value: 'price'},
+                {label: 'Más caros primero', value: '!price'},
+                {label: 'Disponibles primero', value: '!available'},
+                {label: 'No disponibles primero', value: 'available'},
+                {label: 'Más en stock primero', value: '!quantity'},
+                {label: 'Más escasos primero', value: 'quantity'}
             ]
         };
 
