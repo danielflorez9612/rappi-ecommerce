@@ -115,7 +115,7 @@ class ProductTable extends Component{
         const header = (
             <div className="p-g">
                 <div className="p-g-12 p-md-4" style={{textAlign:'left'}}>
-                    <Dropdown options={this.state.sortOptions} value={this.state.sortKey} placeholder="Sort By" onChange={this.onSortChange} />
+                    <Dropdown options={this.state.sortOptions} value={this.state.sortKey} placeholder="Ordenar por" onChange={this.onSortChange} />
                 </div>
                 <div className="p-g-6 p-md-4">
                     <InputText placeholder="Search by brand" onKeyUp={event => this.dv.filter(event.target.value)} />
