@@ -5,6 +5,8 @@ import {DataView, DataViewLayoutOptions} from "primereact/dataview";
 import {Button} from "primereact/button";
 import {Panel} from "primereact/panel";
 import {products} from '../jsonfiles/products'
+import {categories} from '../jsonfiles/categories'
+import {BreadCrumb} from "primereact/breadcrumb";
 class ProductTable extends Component{
     constructor(props) {
         super(props);
@@ -99,6 +101,43 @@ class ProductTable extends Component{
             );
         }
     }
+    findInCategory(cat, sublevel) {
+        if(cat.id ==sublevel) {
+            return [cat];
+        } else {
+            for(let i = 0;cat.sublevels && i< cat.sublevels.length; i++ ){
+                let found = this.findInCategory(cat.sublevels[i], sublevel);
+                if(found.length>0) {
+                    found.push(cat)
+                    return found;
+                }
+            }
+            return [];
+        }
+    }
+    findSublevel(array, sublevel) {
+        for(let i = 0; array && i< array.length; i++ ){
+            let cat = array[i];
+            let founPath = this.findInCategory(cat, sublevel);
+            if(founPath.length>0) {
+                return founPath;
+            }
+        }
+        return [];
+    }
+    findCategoryPathOf(sublevel) {
+        const  path = this.findSublevel(categories, sublevel).reverse().map(cat => {
+            return {
+              label:cat.name
+            };
+        });
+        return path;
+    }
+    breadCrumbShow() {
+        const items = this.findCategoryPathOf(this.props.match.params['subId']);
+        const home = {icon: 'pi pi-home', url: '/'}
+        return (<BreadCrumb model={items} home={home}/>);
+    }
 
     onSortChange(event) {
         let value = event.value;
@@ -126,7 +165,7 @@ class ProductTable extends Component{
             <div className="p-g">
                 <div className="p-g-12">
                     <div className="card card-w-title">
-                        <h1>Productos (CAMBIAR)</h1>
+                        {this.breadCrumbShow()}
                         <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="brand" itemTemplate={this.dataViewItemTemplate} layout={this.state.layout}
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
