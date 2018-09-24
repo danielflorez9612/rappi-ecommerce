@@ -4,10 +4,10 @@ import {InputText} from "primereact/inputtext";
 import {DataView, DataViewLayoutOptions} from "primereact/dataview";
 import {Button} from "primereact/button";
 import {Panel} from "primereact/panel";
-
+import {products} from '../jsonfiles/products'
 class ProductTable extends Component{
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             dataViewValue:[],
             layout: 'list',
@@ -22,44 +22,67 @@ class ProductTable extends Component{
         this.dataViewItemTemplate = this.dataViewItemTemplate.bind(this);
         this.onSortChange = this.onSortChange.bind(this);
     }
-
-    componentDidMount() {
-        //this.setState()
+    renderBuy(item) {
+        if(item.available){
+            return (
+                <Button label="Agregar al carrito" icon="pi pi-plus"/>
+            );
+        } else {
+            return (
+                <Button label="No disponible" className="p-button-danger" disabled={true}/>
+            );
+        }
+    }
+    renderBuyGrid(item) {
+        if(item.available){
+            return (
+                <Button icon="pi pi-plus"/>
+            );
+        } else {
+            return (
+                <Button label="No disponible" className="p-button-danger" disabled={true}/>
+            );
+        }
     }
 
-
-    dataViewItemTemplate(car,layout) {
-        if (!car) {
-            return;
+    refreshList(sublevelId) {
+        const productsLol = products.filter(product => parseInt(product.sublevel_id) === parseInt(sublevelId));
+        this.setState({dataViewValue:productsLol});
+    }
+    componentDidMount() {
+        const sublevelId = this.props.match.params['subId'];
+        this.refreshList(sublevelId);
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.location.pathname !== this.props.location.pathname) {
+            this.refreshList(nextProps.match.params['subId']);
         }
-
-        let src = "assets/demo/images/car/" + car.brand + ".png";
-
+    }
+    dataViewItemTemplate(item,layout) {
+        if (!item) {
+            return null;
+        }
+        let src = "assets/demo/images/gift.png";
+        const imageStyle = {height:100+'px', width: 100+'px'};
         if (layout === 'list') {
             return (
                 <div className="p-g" style={{padding: '2em', borderBottom: '1px solid #d9d9d9'}}>
                     <div className="p-g-12 p-md-3">
-                        <img src={src} alt={car.brand}/>
+                        <img src={src} alt='gift' style={imageStyle}/>
                     </div>
                     <div className="p-g-12 p-md-8 car-details">
                         <div className="p-g">
-                            <div className="p-g-2 p-sm-6">Vin:</div>
-                            <div className="p-g-10 p-sm-6">{car.vin}</div>
+                            <div className="p-g-2 p-sm-6">Nombre:</div>
+                            <div className="p-g-10 p-sm-6">{item.name}</div>
 
-                            <div className="p-g-2 p-sm-6">Year:</div>
-                            <div className="p-g-10 p-sm-6">{car.year}</div>
+                            <div className="p-g-2 p-sm-6">Cantidad:</div>
+                            <div className="p-g-10 p-sm-6">{item.quantity}</div>
 
-                            <div className="p-g-2 p-sm-6">Brand:</div>
-                            <div className="p-g-10 p-sm-6">{car.brand}</div>
-
-                            <div className="p-g-2 p-sm-6">Color:</div>
-                            <div className="p-g-10 p-sm-6">{car.color}</div>
+                            <div className="p-g-2 p-sm-6">Precio:</div>
+                            <div className="p-g-10 p-sm-6">{item.price}</div>
                         </div>
                     </div>
-
-                    <div className="p-g-12 p-md-1 search-icon" style={{marginTop:'40px'}}>
-                        <Button icon="pi pi-search"/>
-                    </div>
+                    {this.renderBuy(item)}
                 </div>
             );
         }
@@ -67,10 +90,10 @@ class ProductTable extends Component{
         if (layout === 'grid') {
             return (
                 <div style={{ padding: '.5em' }} className="p-g-12 p-md-3">
-                    <Panel header={car.vin} style={{ textAlign: 'center' }}>
-                        <img src={`assets/demo/images/car/${car.brand}.png`} alt={car.brand} />
-                        <div className="car-detail">{car.year} - {car.color}</div>
-                        <Button icon="pi pi-search"/>
+                    <Panel header={'header'} style={{ textAlign: 'center' }}>
+                        <img src={src} alt='gift' style={imageStyle} />
+                        <div className="car-detail">{item.name} - {item.price}</div>
+                        {this.renderBuyGrid(item)}
                     </Panel>
                 </div>
             );
@@ -103,7 +126,7 @@ class ProductTable extends Component{
             <div className="p-g">
                 <div className="p-g-12">
                     <div className="card card-w-title">
-                        <h1>DataView</h1>
+                        <h1>Productos (CAMBIAR)</h1>
                         <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="brand" itemTemplate={this.dataViewItemTemplate} layout={this.state.layout}
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
