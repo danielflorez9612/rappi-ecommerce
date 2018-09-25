@@ -210,7 +210,7 @@ class ProductTable extends Component{
                 <div className="p-g-6 p-md-4">
                     <div className='p-g'>
                         <div className='p-g-12'><Dropdown options={this.state.filterOptions} value={this.state.filterKey} placeholder="Filtrar por" onChange={(e)=>this.onFilterChange(e)} /></div>
-                        <div className='p-g-12'>{this.showFilter(this.state.filterKey)}</div>
+                        <div className='p-g-12'>{this.showFilter()}</div>
                     </div>
                 </div>
                 <div className="p-g-6 p-md-4" style={{textAlign: 'right'}}>
@@ -223,7 +223,8 @@ class ProductTable extends Component{
                 <div className="p-g-12">
                     <div className="card card-w-title">
                         {this.breadCrumbShow()}
-                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="name" itemTemplate={this.itemTemplate} layout={this.state.layout}
+                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} itemTemplate={this.itemTemplate} layout={this.state.layout}
+                                  emptyMessage='No se encontraron datos'
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
                 </div>
