@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Dropdown} from "primereact/dropdown";
 import {InputText} from "primereact/inputtext";
-import {DataView, DataViewLayoutOptions} from "primereact/dataview";
+import {DataView} from "primereact/dataview";
 import {Button} from "primereact/button";
 import {Panel} from "primereact/panel";
 import {products} from '../jsonfiles/products'
@@ -9,24 +9,24 @@ import {categories} from '../jsonfiles/categories'
 import {BreadCrumb} from "primereact/breadcrumb";
 import {CartService} from "../service/CartService";
 import {Growl} from "primereact/growl";
+import {Slider} from "primereact/components/slider/Slider";
+import Cart from "./Cart";
 
 class ProductTable extends Component{
     constructor(props) {
         super(props);
+        const mPrice = CartService.maxPrice;
         this.state = {
+            maxPrice : mPrice,
+            rangeValues:[0,mPrice],
             dataViewValue:[],
-            layout: 'list',
             filterOptions: [
                 {label: 'Filtrar por nombre', value:'name'},
                 {label: 'Filtrar por disponibilidad', value: 'available'},
                 {label: 'Filtrar por rango de precio', value: 'price'},
                 {label: 'Filtrar por cantidad en stock', value: 'stock'},
             ],
-            filterKey:'price',
-            range: {
-                from:'',
-                until:''
-            },
+            filterKey:'name',
             sortOptions: [
                 {label: 'Más económicos primero', value: 'price'},
                 {label: 'Más caros primero', value: '!price'},
@@ -213,9 +213,6 @@ class ProductTable extends Component{
                         <div className='p-g-12'>{this.showFilter()}</div>
                     </div>
                 </div>
-                <div className="p-g-6 p-md-4" style={{textAlign: 'right'}}>
-                    <DataViewLayoutOptions layout={this.state.layout} onChange={event => this.setState({layout: event.value})} />
-                </div>
             </div>
         );
         return (
@@ -223,7 +220,7 @@ class ProductTable extends Component{
                 <div className="p-g-12">
                     <div className="card card-w-title">
                         {this.breadCrumbShow()}
-                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} itemTemplate={this.itemTemplate} layout={this.state.layout}
+                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} itemTemplate={this.itemTemplate} layout='grid'
                                   emptyMessage='No se encontraron datos'
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
@@ -265,29 +262,21 @@ class ProductTable extends Component{
                     }} />
                 );
             case 'price':
-                let range = this.state.range;
-                const buttonStyle = {'height':'30px','padding':0};
                 return (
-                    <div className='p-g'>
-                        <InputText className='p-g-6' placeholder='Desde' value={this.state.range.from} onChange={event => {
-                            range.from = event.target.value;
-                            this.setState({range});
-                        }} />
-                        <InputText className='p-g-6' placeholder='Hasta' value={this.state.range.until} onChange={event => {
-                            range.until = event.target.value;
-                            this.setState({range});
-                        }} />
-                        <Button style={buttonStyle} className='p-g-6' label='Buscar' onClick={e=>{
-                            this.setState({range});
-                            const filter = ['price', range];
-                            this.refreshList(subId,filter);
-                        }}/>
-                        <Button style={buttonStyle} className='p-g-6 p-button-secondary' label='Limpiar' onClick={e=>{
-                            range.from ='';
-                            range.until = '';
-                            this.setState({range});
-                            this.refreshList(subId);
-                        }}/>
+                    <div>
+                        <h3>Rango: {Cart.moneyFormat(this.state.rangeValues[0])} - {Cart.moneyFormat(this.state.rangeValues[1])}</h3>
+                        <Slider value={this.state.rangeValues}
+                                range={true}
+                                animate={true}
+                                onChange={(e) => {
+                                    this.setState({rangeValues:e.value});
+                                    const range = {from:e.value[0], until: e.value[1]};
+                                    const filter = ['price',range ];
+                                    this.refreshList(subId,filter);
+                                }}
+                                min={0}
+                                max={this.state.maxPrice}
+                        />
                     </div>
                 );
         }
@@ -305,8 +294,8 @@ class ProductTable extends Component{
     filterByPrice(productsLol, {from, until}) {
         return productsLol.filter(product => {
             const price = CartService.valueOf(product.id);
-            return (from==='' || price >= from) &&
-                (until===''||price<=until);
+            return (isNaN(from) || price >= from) &&
+                (isNaN(until)||price<=until);
         });
     }
 }

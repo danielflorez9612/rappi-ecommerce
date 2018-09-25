@@ -9,6 +9,14 @@ export class CartService {
     static updateCart() {
         localStorage.setItem('cart', JSON.stringify(CartService.loadedCart));
     }
+    static get maxPrice() {
+        let max = 0;
+        for(let i =0; i< products.length; i++) {
+            const floatPrice=this.priceToFloat(products[i].price);
+            if(floatPrice>max)max = floatPrice;
+        }
+        return max;
+    }
    static get products() {
        let productsInCart = [];
        for (const key of CartService.loadedCart.keys()) {
@@ -22,13 +30,16 @@ export class CartService {
         this.updateCart();
    }
    static findProduct(productId) {
-        const prod = products.find(product => product.id ===productId);
+        const prod = products.find(({id}) => id ===productId);
         if(!prod) throw 'No hay un producto con este id';
         return prod;
    }
+   static priceToFloat (price) {
+       return parseFloat(price.substr(1).replace(/,/g, ''))
+   }
     static valueOf(productId) {
        const product = this.findProduct(productId);
-        return parseFloat(product.price.substr(1).replace(/,/g, ''))
+        return this.priceToFloat(product.price);
     }
    static get totalPrice() {
        const cart = CartService.loadedCart;

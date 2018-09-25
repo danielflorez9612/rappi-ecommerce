@@ -14,6 +14,7 @@ import './App.css';
 import categories from './jsonfiles/categories';
 import ProductTable from "./components/ProductTable";
 import Cart from "./components/Cart";
+import {CartService} from "./service/CartService";
 
 class App extends Component {
 
@@ -96,7 +97,7 @@ class App extends Component {
         }
     }
     createMenu() {
-        this.menu = [{label: 'Mi carrito de compras', command:() => {window.location = '#/carrito/ver'}, icon: 'pi pi-inbox'}];
+        this.menu = [{label: `Mi carrito de compras (${CartService.size})`, command:() => {window.location = '#/carrito/ver'}, icon: 'pi pi-inbox'}];
         this.menu = this.menu.concat(this.mapCategories(categories.categories));
     }
 
