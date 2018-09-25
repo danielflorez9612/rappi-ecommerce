@@ -16,6 +16,17 @@ class ProductTable extends Component{
         this.state = {
             dataViewValue:[],
             layout: 'list',
+            filterOptions: [
+                {label: 'Filtrar por nombre', value:'name'},
+                {label: 'Filtrar por disponibilidad', value: 'available'},
+                {label: 'Filtrar por rango de precio', value: 'price'},
+                {label: 'Filtrar por cantidad en stock', value: 'stock'},
+            ],
+            filterKey:'price',
+            range: {
+                from:'',
+                until:''
+            },
             sortOptions: [
                 {label: 'Más económicos primero', value: 'price'},
                 {label: 'Más caros primero', value: '!price'},
@@ -77,6 +88,15 @@ class ProductTable extends Component{
         if(filter) {
             if (filter[0]==='name'){
                 productsLol = this.filterByName(productsLol, filter[1]);
+            }
+            if(filter[0]==='available') {
+                productsLol = this.filterByAvailable(productsLol, filter[1]==='true');
+            }
+            if(filter[0]==='stock') {
+                productsLol = this.filterByQuantity(productsLol, filter[1]);
+            }
+            if(filter[0]==='price') {
+                productsLol = this.filterByPrice(productsLol, filter[1]);
             }
         }
         this.setState({dataViewValue:productsLol});
@@ -164,7 +184,7 @@ class ProductTable extends Component{
     }
     breadCrumbShow() {
         const items = this.findCategoryPathOf(this.props.match.params['subId']);
-        const home = {icon: 'pi pi-home', url: '/'}
+        const home = {icon: 'pi pi-home', url: '/'};
         return (<BreadCrumb model={items} home={home}/>);
     }
 
@@ -176,6 +196,11 @@ class ProductTable extends Component{
         else
             this.setState({sortOrder: 1, sortField:value, sortKey: value});
     }
+    onFilterChange(event) {
+        this.refreshList(this.props.match.params['subId']);
+        let value = event.value;
+        this.setState({filterKey:value})
+    }
     render() {
         const header = (
             <div className="p-g">
@@ -183,10 +208,10 @@ class ProductTable extends Component{
                     <Dropdown options={this.state.sortOptions} value={this.state.sortKey} placeholder="Ordenar por" onChange={this.onSortChange} />
                 </div>
                 <div className="p-g-6 p-md-4">
-                    <InputText placeholder="Filtrar por nombre" onKeyUp={event => {
-                        const filter = ['name', event.target.value];
-                        this.refreshList(this.props.match.params['subId'],filter);
-                    }} />
+                    <div className='p-g'>
+                        <div className='p-g-12'><Dropdown options={this.state.filterOptions} value={this.state.filterKey} placeholder="Filtrar por" onChange={(e)=>this.onFilterChange(e)} /></div>
+                        <div className='p-g-12'>{this.showFilter(this.state.filterKey)}</div>
+                    </div>
                 </div>
                 <div className="p-g-6 p-md-4" style={{textAlign: 'right'}}>
                     <DataViewLayoutOptions layout={this.state.layout} onChange={event => this.setState({layout: event.value})} />
@@ -210,6 +235,78 @@ class ProductTable extends Component{
     addItemToCart(id) {
         CartService.modifyItemInCart(id,1);
         this.showSuccess();
+    }
+
+    showFilter() {
+        const availableOptions = [{label:'Disponibles',value:'true'}, {label:'No disponibles', value:'false'}];
+        const subId = this.props.match.params['subId'];
+        switch (this.state.filterKey) {
+            case 'name':
+                return (
+                    <InputText placeholder='Nombre' onKeyUp={event => {
+                        const filter = ['name', event.target.value];
+                        this.refreshList(this.props.match.params['subId'],filter);
+                    }} />
+                );
+            case 'available':
+                return (
+                    <Dropdown placeholder='Disponibilidad' options={availableOptions} value={null}
+                              onChange={event => {
+                        const filter = ['available', event.value];
+                        this.refreshList(subId,filter);
+                    }} />
+                );
+            case 'stock':
+                return (
+                    <InputText placeholder='Al menos' onKeyUp={event => {
+                        const filter = ['stock', event.target.value];
+                        this.refreshList(subId,filter);
+                    }} />
+                );
+            case 'price':
+                let range = this.state.range;
+                const buttonStyle = {'height':'30px','padding':0};
+                return (
+                    <div className='p-g'>
+                        <InputText className='p-g-6' placeholder='Desde' value={this.state.range.from} onChange={event => {
+                            range.from = event.target.value;
+                            this.setState({range});
+                        }} />
+                        <InputText className='p-g-6' placeholder='Hasta' value={this.state.range.until} onChange={event => {
+                            range.until = event.target.value;
+                            this.setState({range});
+                        }} />
+                        <Button style={buttonStyle} className='p-g-6' label='Buscar' onClick={e=>{
+                            this.setState({range});
+                            const filter = ['price', range];
+                            this.refreshList(subId,filter);
+                        }}/>
+                        <Button style={buttonStyle} className='p-g-6 p-button-secondary' label='Limpiar' onClick={e=>{
+                            range.from ='';
+                            range.until = '';
+                            this.setState({range});
+                            this.refreshList(subId);
+                        }}/>
+                    </div>
+                );
+        }
+
+    }
+
+    filterByAvailable(productsLol, available) {
+        return productsLol.filter(product => product.available === available);
+    }
+
+    filterByQuantity(productsLol, quantity) {
+        return productsLol.filter(product => product.quantity >= quantity);
+    }
+
+    filterByPrice(productsLol, {from, until}) {
+        return productsLol.filter(product => {
+            const price = CartService.valueOf(product.id);
+            return (from==='' || price >= from) &&
+                (until===''||price<=until);
+        });
     }
 }
 export default ProductTable;
