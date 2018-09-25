@@ -1,8 +1,26 @@
 import React, {Component} from 'react';
 import {Button} from "primereact/button";
 import {CartService} from "../service/CartService";
+import {InputText} from "primereact/inputtext";
 
 class Cart extends Component {
+    constructor() {
+        super();
+        this.state = {
+          cart:CartService.cart
+        };
+    }
+    updateCart(id,quantity) {
+        CartService.modifyItemInCart(id,quantity);
+        let modifiedCart = this.state.cart;
+        modifiedCart.set(id, quantity);
+        this.setState({cart:modifiedCart});
+    }
+
+    deleteFromCart(id) {
+        CartService.deleteProduct(id);
+        this.setState({cart:CartService.loadedCart});
+    }
     productTemplate(item) {
         if (!item) {
             return null;
@@ -10,18 +28,25 @@ class Cart extends Component {
         let src = "assets/demo/images/gift.png";
         const imageStyle = {height:100+'px', width: 100+'px'};
         return (
-            <div className="p-g-12" key={item.id}>
-                <div className="p-g-12 p-md-3">
+            <div className="p-g-12" key={item.id} style={{margin:'4px 0',borderBottom:'solid 1px lightGrey'}}>
+                <div className="p-g-12 p-md-3" style={{'textAlign':'center'}}>
                     <img src={src} alt='gift' style={imageStyle}/>
                 </div>
-                <div className="p-g-12 p-md-8 car-details">
+                <div className="p-g-12 p-md-9 car-details">
                     <div className="p-g">
-                        <div className="p-g-2 p-sm-6">Nombre:</div>
-                        <div className="p-g-10 p-sm-6">{item.name}</div>
-
-                        <div className="p-g-2 p-sm-6">Precio:</div>
-                        <div className="p-g-10 p-sm-6">{item.price}</div>
+                        <div className="p-md-7 p-g-7" style={{'fontWeight':'bold','fontSize':1.5+'em'}}>{item.name}</div>
+                        <div  className="p-md-5 p-g-5" style={{'textAlign':'right', 'fontSize':1.5+'em','borderBottom':'solid 1px grey'}}>COP {item.price}</div>
+                        <div className='p-md-7 p-g-6' />
+                        <div className='p-md-2 p-g-3' ><span style={{'verticalAlign':'sub'}}>Cant.</span></div>
+                        <div className='p-md-3 p-g-3' >
+                            <InputText  type="text" keyfilter="pint" value={this.state.cart.get(item.id)} onChange={(e) => this.updateCart(item.id, e.target.value)}/>
+                        </div>
                     </div>
+                </div>
+                <div className='p-g-12' style={{'height':1+'px'}}/>
+                <div className='p-g-8' />
+                <div className='p-g-4' style={{'textAlign':'right'}}>
+                    <span onClick={(e)=>this.deleteFromCart(item.id)} style={{'cursor':'pointer', 'color':'red'}}>Eliminar del carrito</span>
                 </div>
             </div>
         );
@@ -34,10 +59,14 @@ class Cart extends Component {
           </div>
         );
     }
+    static moneyFormat(number) {
+        return '$'+number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
     render() {
         const totalQuantity = CartService.size;
         const addedS = totalQuantity>1?'s':'';
-        const total = '$'+CartService.totalPrice;
+        const totalStyle ={'fontWeight':'bold','fontSize':1.5+'em'};
+        const total = Cart.moneyFormat(CartService.totalPrice);
         return (
             <div className="p-g p-fluid">
                 <div className="p-g-12 p-lg-7">
@@ -50,7 +79,7 @@ class Cart extends Component {
                     <div className="card p-g">
                             <Button className='p-g-12' label="Ir a Completar transacción" />
                             <div className="p-g-6 p-lg-6">
-                                Articulo{addedS} ({totalQuantity})
+                                Articulo{addedS} ({parseInt(totalQuantity)})
                             </div>
                             <div className="p-g-6 p-lg-6">
                                 {total}
@@ -61,10 +90,19 @@ class Cart extends Component {
                             <div className="p-g-6 p-lg-6">
                                 Gratis
                             </div>
+                            <div className='p-g-12' style={{'borderTop':'solid 1px grey', 'marginTop':4+'px'}}>
+                                <div className="p-g-6 p-lg-6" style={totalStyle}>
+                                    Total:
+                                </div>
+                                <div className="p-g-6 p-lg-6" style={totalStyle}>
+                                    {total}
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
         );
     }
+
 }
 export default Cart

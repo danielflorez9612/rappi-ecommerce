@@ -7,6 +7,7 @@ import {Panel} from "primereact/panel";
 import {products} from '../jsonfiles/products'
 import {categories} from '../jsonfiles/categories'
 import {BreadCrumb} from "primereact/breadcrumb";
+import {CartService} from "../service/CartService";
 
 class ProductTable extends Component{
     constructor(props) {
@@ -25,13 +26,17 @@ class ProductTable extends Component{
         };
 
 
-        this.dataViewItemTemplate = this.dataViewItemTemplate.bind(this);
+        this.itemTemplate = this.itemTemplate.bind(this);
         this.onSortChange = this.onSortChange.bind(this);
     }
     renderBuy(item) {
-        if(item.available){
+        if(CartService.cart.has(item.id)){
             return (
-                <Button label="Agregar al carrito" icon="pi pi-plus"/>
+                <Button label="En el carrito" className="p-button-success" disabled={true}/>
+            );
+        } else if(item.available){
+            return (
+                <Button label="Agregar al carrito" icon="pi pi-plus" onClick={(e)=>CartService.modifyItemInCart(item.id,1)}/>
             );
         } else {
             return (
@@ -40,9 +45,13 @@ class ProductTable extends Component{
         }
     }
     renderBuyGrid(item) {
-        if(item.available){
+        if(CartService.cart.has(item.id)){
             return (
-                <Button icon="pi pi-plus"/>
+                <Button label="En el carrito" className="p-button-success" disabled={true}/>
+            );
+        } else if(item.available){
+            return (
+                <Button icon="pi pi-plus" onClick={(e)=>CartService.modifyItemInCart(item.id,1)}/>
             );
         } else {
             return (
@@ -64,7 +73,7 @@ class ProductTable extends Component{
             this.refreshList(nextProps.match.params['subId']);
         }
     }
-    dataViewItemTemplate(item,layout) {
+    itemTemplate(item, layout) {
         if (!item) {
             return null;
         }
@@ -170,7 +179,7 @@ class ProductTable extends Component{
                 <div className="p-g-12">
                     <div className="card card-w-title">
                         {this.breadCrumbShow()}
-                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="brand" itemTemplate={this.dataViewItemTemplate} layout={this.state.layout}
+                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="brand" itemTemplate={this.itemTemplate} layout={this.state.layout}
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
                 </div>

@@ -14,6 +14,10 @@ export class CartService {
        }
        return productsInCart;
    }
+   static deleteProduct(id) {
+        this.loadedCart.delete(id);
+        localStorage.setItem('cart', JSON.stringify(this.loadedCart));
+   }
     static valueOf(productId) {
        const product = products.find(product => product.id ===productId);
         return parseFloat(product.price.substr(1).replace(/,/g, ''))
@@ -31,7 +35,7 @@ export class CartService {
        let count = 0;
        const cart = CartService.loadedCart;
        for (const key of cart.keys()) {
-           count+=cart.get(key);
+           count+=parseInt(cart.get(key));
        }
        return count;
    }
@@ -39,5 +43,6 @@ export class CartService {
        const cCart = new Map(CartService.cart);
        cCart.set(id, quantity);
        localStorage.setItem('cart', JSON.stringify(cCart));
+       this.loadedCart = cCart;
    }
 }
