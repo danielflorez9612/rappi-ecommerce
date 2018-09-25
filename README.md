@@ -10,6 +10,20 @@ If you want to run this in production in an static server you can run "npm run b
 [ http://localhost:5000 ](http://localhost:5000)   
 
 
+## Considerations on solving the problem
+I spent two days working on this project and I found it really fun, my approach to this problem 
+was segmenting the requirements in smaller user stories like, showing the shopping cart, manege the local storage 
+for the cart, show the menu, show the items on a subcategory, filtering by name and other tasks like those.
+
+I have to say that my work experience is mostly in Back-End development but I really enjoy using some frameworks like React.
+ 
+Even though I had some problems with the given JSON of categories and its relation with the JSON of 
+products, I think that not always the data we use is in the expected structure. So finding out a way
+to solve the problems that we encounter is of real value.
+
+Finally if you have any comments, feel free to make an issue or send me an email. 
+Thanks.
+
 ## Table of Contents
 
 - [Available Scripts](#available-scripts)
