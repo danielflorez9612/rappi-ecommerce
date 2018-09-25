@@ -8,11 +8,19 @@ class Cart extends Component {
     constructor() {
         super();
         this.state = {
-          cart:CartService.cart
+            cart:CartService.cart,
+            errors:new Set()
         };
     }
     updateCart(id,quantity) {
-        CartService.modifyItemInCart(id,quantity);
+        try {
+            CartService.modifyItemInCart(id,quantity);
+            this.setState({errors:new Set()})
+        } catch (e) {
+            let errors = this.state.errors;
+            errors.add(id);
+           this.setState({errors})
+        }
         let modifiedCart = this.state.cart;
         modifiedCart.set(id, quantity);
         this.setState({cart:modifiedCart});
@@ -42,6 +50,7 @@ class Cart extends Component {
                         <div className='p-md-2 p-g-3' ><span style={{'verticalAlign':'sub'}}>Cant.</span></div>
                         <div className='p-md-3 p-g-3' >
                             <InputText  type="text" keyfilter="pint" value={this.state.cart.get(item.id)} onChange={(e) => this.updateCart(item.id, e.target.value)}/>
+                            {this.showError(item.id)}
                         </div>
                     </div>
                 </div>
@@ -82,12 +91,12 @@ class Cart extends Component {
                 </div>
                 <div className="p-g-12 p-lg-5">
                     <div className="card p-g">
-                            <Button className='p-g-12' label="Ir a Completar transacción" />
+                            <Button className='p-g-12' label="Ir a Completar transacción" disabled={this.state.errors.size}/>
                             <div className="p-g-6 p-lg-6">
                                 Articulo{addedS} ({parseInt(totalQuantity)})
                             </div>
                             <div className="p-g-6 p-lg-6">
-                                {total}
+                                {this.state.errors.size?'-':total}
                             </div>
                             <div className="p-g-6 p-lg-6">
                                 Envío a domicilio
@@ -100,7 +109,7 @@ class Cart extends Component {
                                     Total:
                                 </div>
                                 <div className="p-g-6 p-lg-6" style={totalStyle}>
-                                    {total}
+                                    {this.state.errors.size?'-':total}
                                 </div>
                             </div>
                     </div>
@@ -110,5 +119,14 @@ class Cart extends Component {
         );
     }
 
+    showError(id) {
+        if(this.state.errors.has(id)){
+            return (
+                <span style={{'fontSize':'0.8em', 'color':'red'}}>¡No tenemos tantos de este!</span>
+            );
+        } else {
+            return null;
+        }
+    }
 }
 export default Cart

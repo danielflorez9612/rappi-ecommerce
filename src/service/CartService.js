@@ -9,7 +9,7 @@ export class CartService {
    static get products() {
        let productsInCart = [];
        for (const key of CartService.loadedCart.keys()) {
-           const prod = products.find(product => product.id === key);
+           const prod = this.findProduct(key);
            productsInCart.push(prod);
        }
        return productsInCart;
@@ -18,8 +18,13 @@ export class CartService {
         this.loadedCart.delete(id);
         localStorage.setItem('cart', JSON.stringify(this.loadedCart));
    }
+   static findProduct(productId) {
+        const prod = products.find(product => product.id ===productId);
+        if(!prod) throw 'No hay un producto con este id';
+        return prod;
+   }
     static valueOf(productId) {
-       const product = products.find(product => product.id ===productId);
+       const product = this.findProduct(productId);
         return parseFloat(product.price.substr(1).replace(/,/g, ''))
     }
    static get totalPrice() {
@@ -40,6 +45,8 @@ export class CartService {
        return count;
    }
    static modifyItemInCart(id, quantity) {
+        const prod = this.findProduct(id);
+        if(quantity>prod.quantity) throw 'No hay tantos de este producto';
        const cCart = new Map(CartService.cart);
        cCart.set(id, quantity);
        localStorage.setItem('cart', JSON.stringify(cCart));
