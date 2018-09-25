@@ -62,8 +62,23 @@ class ProductTable extends Component{
         }
     }
 
-    refreshList(sublevelId) {
-        const productsLol = products.filter(product => parseInt(product.sublevel_id) === parseInt(sublevelId));
+    filterByName(products, name) {
+        if(name) {
+            return products.filter(product => {
+                return product.name.includes(name);
+            })
+        } else {
+            return products;
+        }
+
+    }
+    refreshList(sublevelId, filter) {
+        let productsLol = products.filter(product => parseInt(product.sublevel_id) === parseInt(sublevelId));
+        if(filter) {
+            if (filter[0]==='name'){
+                productsLol = this.filterByName(productsLol, filter[1]);
+            }
+        }
         this.setState({dataViewValue:productsLol});
     }
     componentDidMount() {
@@ -168,7 +183,10 @@ class ProductTable extends Component{
                     <Dropdown options={this.state.sortOptions} value={this.state.sortKey} placeholder="Ordenar por" onChange={this.onSortChange} />
                 </div>
                 <div className="p-g-6 p-md-4">
-                    <InputText placeholder="Search by brand" onKeyUp={event => this.dv.filter(event.target.value)} />
+                    <InputText placeholder="Filtrar por nombre" onKeyUp={event => {
+                        const filter = ['name', event.target.value];
+                        this.refreshList(this.props.match.params['subId'],filter);
+                    }} />
                 </div>
                 <div className="p-g-6 p-md-4" style={{textAlign: 'right'}}>
                     <DataViewLayoutOptions layout={this.state.layout} onChange={event => this.setState({layout: event.value})} />
@@ -180,7 +198,7 @@ class ProductTable extends Component{
                 <div className="p-g-12">
                     <div className="card card-w-title">
                         {this.breadCrumbShow()}
-                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="brand" itemTemplate={this.itemTemplate} layout={this.state.layout}
+                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} filterBy="name" itemTemplate={this.itemTemplate} layout={this.state.layout}
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
                 </div>
