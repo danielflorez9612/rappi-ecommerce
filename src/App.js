@@ -146,7 +146,7 @@ class App extends Component {
                     <ScrollPanel ref={(el) => this.layoutMenuScroller = el} style={{height:'100%'}}>
 
                         <div className="layout-sidebar-scroll-content" >
-                            <div className="layout-logo" onClick={e=> window.location=''}>
+                            <div className="layout-logo" onClick={e=> window.location=''} style={{'cursor':'pointer'}}>
                                 <img alt="Logo" src={logo} />
                             </div>
                             <br/>
