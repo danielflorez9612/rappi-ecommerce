@@ -96,7 +96,7 @@ class App extends Component {
         }
     }
     createMenu() {
-        this.menu = [{label: 'Mi carrito de compras', command:() => {window.location = '#/carrito/ver'}}];
+        this.menu = [{label: 'Mi carrito de compras', command:() => {window.location = '#/carrito/ver'}, icon: 'pi pi-inbox'}];
         this.menu = this.menu.concat(this.mapCategories(categories.categories));
     }
 

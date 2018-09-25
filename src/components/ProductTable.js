@@ -7,6 +7,7 @@ import {Panel} from "primereact/panel";
 import {products} from '../jsonfiles/products'
 import {categories} from '../jsonfiles/categories'
 import {BreadCrumb} from "primereact/breadcrumb";
+
 class ProductTable extends Component{
     constructor(props) {
         super(props);
@@ -105,7 +106,7 @@ class ProductTable extends Component{
         }
     }
     findInCategory(cat, sublevel) {
-        if(cat.id ==sublevel) {
+        if(parseInt(cat.id) === parseInt(sublevel)) {
             return [cat];
         } else {
             for(let i = 0;cat.sublevels && i< cat.sublevels.length; i++ ){
@@ -121,9 +122,9 @@ class ProductTable extends Component{
     findSublevel(array, sublevel) {
         for(let i = 0; array && i< array.length; i++ ){
             let cat = array[i];
-            let founPath = this.findInCategory(cat, sublevel);
-            if(founPath.length>0) {
-                return founPath;
+            let foundPath = this.findInCategory(cat, sublevel);
+            if(foundPath.length>0) {
+                return foundPath;
             }
         }
         return [];

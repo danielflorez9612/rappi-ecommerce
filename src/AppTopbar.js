@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import Cart from "./components/Cart";
 
 export class AppTopbar extends Component {
 
