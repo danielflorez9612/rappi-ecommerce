@@ -53,7 +53,7 @@ class ProductTable extends Component{
             );
         } else if(item.available){
             return (
-                <Button icon="pi pi-plus" onClick={(e)=>this.addItemToCart(item.id)}/>
+                <Button icon="pi pi-plus" label="Agregar" onClick={(e)=>this.addItemToCart(item.id)}/>
             );
         } else {
             return (
@@ -89,8 +89,7 @@ class ProductTable extends Component{
                     </div>
                     <div className="p-g-12 p-md-8 car-details">
                         <div className="p-g">
-                            <div className="p-g-2 p-sm-6">Nombre:</div>
-                            <div className="p-g-10 p-sm-6">{item.name}</div>
+                            <div className="p-g-12 p-sm-12" style={{'fontWeight':'bold','fontSize':'1.5em'}}>{item.name}</div>
 
                             <div className="p-g-2 p-sm-6">Cantidad:</div>
                             <div className="p-g-10 p-sm-6">{item.quantity}</div>
@@ -107,9 +106,9 @@ class ProductTable extends Component{
         if (layout === 'grid') {
             return (
                 <div style={{ padding: '.5em' }} className="p-g-12 p-md-3">
-                    <Panel header={'header'} style={{ textAlign: 'center' }}>
+                    <Panel header={item.name} style={{ textAlign: 'center' }}>
                         <img src={src} alt='gift' style={imageStyle} />
-                        <div className="car-detail">{item.name} - {item.price}</div>
+                        <div className="car-detail">{item.price}</div>
                         {this.renderBuyGrid(item)}
                     </Panel>
                 </div>
