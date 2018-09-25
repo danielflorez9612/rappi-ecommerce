@@ -91,7 +91,7 @@ class Cart extends Component {
                 </div>
                 <div className="p-g-12 p-lg-5">
                     <div className="card p-g">
-                            <Button className='p-g-12' label="Ir a Completar transacción" disabled={this.state.errors.size}/>
+                            <Button className='p-g-12' label="Ir a Completar transacción" disabled={this.state.errors.size || !this.state.cart.size} onClick={(e)=> this.buyCart()}/>
                             <div className="p-g-6 p-lg-6">
                                 Articulo{addedS} ({parseInt(totalQuantity)})
                             </div>
@@ -127,6 +127,11 @@ class Cart extends Component {
         } else {
             return null;
         }
+    }
+
+    buyCart() {
+        CartService.buy();
+        this.growl.show({severity: 'success', summary: 'Compra exitosa', detail: 'Hemos cargado este valor a tu tarjeta de crédito'});
     }
 }
 export default Cart

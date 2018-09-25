@@ -6,6 +6,9 @@ export class CartService {
        const cCart = localStorage.getItem('cart');
        return new Map(JSON.parse(cCart));
     }
+    static updateCart() {
+        localStorage.setItem('cart', JSON.stringify(CartService.loadedCart));
+    }
    static get products() {
        let productsInCart = [];
        for (const key of CartService.loadedCart.keys()) {
@@ -16,7 +19,7 @@ export class CartService {
    }
    static deleteProduct(id) {
         this.loadedCart.delete(id);
-        localStorage.setItem('cart', JSON.stringify(this.loadedCart));
+        this.updateCart();
    }
    static findProduct(productId) {
         const prod = products.find(product => product.id ===productId);
@@ -47,9 +50,14 @@ export class CartService {
    static modifyItemInCart(id, quantity) {
         const prod = this.findProduct(id);
         if(quantity>prod.quantity) throw 'No hay tantos de este producto';
-       const cCart = new Map(CartService.cart);
-       cCart.set(id, quantity);
-       localStorage.setItem('cart', JSON.stringify(cCart));
-       this.loadedCart = cCart;
+        CartService.loadedCart.set(id, quantity);
+        this.updateCart();
    }
+   static buy() {
+        CartService.clearCart();
+   }
+
+    static clearCart() {
+        localStorage.removeItem('cart');
+    }
 }
