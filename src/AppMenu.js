@@ -58,13 +58,13 @@ class AppSubmenu extends Component {
             let active = this.state.activeIndex === i;
             let styleClass = classNames(item.badgeStyleClass, {'active-menuitem': active});
             let badge = item.badge && <span className="menuitem-badge">{item.badge}</span>;
-            let submenuIcon = item.items && <i className="pi pi-fw pi-angle-down menuitem-toggle-icon"></i>;
+            let submenuIcon = item.items && <i className="pi pi-fw pi-angle-down menuitem-toggle-icon"/>;
 
             return (
                 <li className={styleClass} key={i}>
-                    {item.items && this.props.root===true && <div className='arrow'></div>}
+                    {item.items && this.props.root===true && <div className='arrow'/>}
                     <a href={item.url} onClick={(e) => this.onMenuItemClick(e, item, i)} target={item.target}>
-                        <i className={item.icon}></i>
+                        <i className={item.icon}/>
                         <span>{item.label}</span>
                         {submenuIcon}
                         {badge}

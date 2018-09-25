@@ -1,17 +1,14 @@
-
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 export class Dashboard extends Component {
-
-    constructor() {
-        super();
-    }
-
     render() {
         return (
-            <div className="p-g p-fluid dashboard">
-               Hello dashboard
-            </div>
+            <div style={{
+                'height': '610px',
+                'width': '1000px',
+                'margin': 'auto',
+                'backgroundImage': 'url(assets/layout/images/tienda_baraton.jpg)'
+            }} className="p-g p-fluid dashboard"/>
         );
     }
 }

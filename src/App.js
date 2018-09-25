@@ -12,6 +12,9 @@ import 'fullcalendar/dist/fullcalendar.css';
 import './layout/layout.css';
 import './App.css';
 import categories from './jsonfiles/categories';
+import ProductTable from "./components/ProductTable";
+import Cart from "./components/Cart";
+import {CartService} from "./service/CartService";
 
 class App extends Component {
 
@@ -81,21 +84,21 @@ class App extends Component {
             })
         }
     }
-    mapCategories(array, currentVal = "") {
+    mapCategories(array) {
         if(array) {
             return  array.map(value => {
-                const nextVal = currentVal+"/"+value.id;
-                const items = this.mapCategories(value.sublevels, nextVal);
+                const items = this.mapCategories(value.sublevels);
                 let command =null;
                 if(!items) {
-                    command = () => {window.location = '#'+nextVal}
+                    command = () => {window.location = '#/'+value.id}
                 }
                 return {label: value.name, items: items, command: command}
             });
         }
     }
     createMenu() {
-        this.menu = this.mapCategories(categories.categories)
+        this.menu = [{label: `Mi carrito de compras (${CartService.size})`, command:() => {window.location = '#/carrito/ver'}, icon: 'pi pi-inbox'}];
+        this.menu = this.menu.concat(this.mapCategories(categories.categories));
     }
 
     addClass(element, className) {
@@ -142,9 +145,10 @@ class App extends Component {
                 <div ref={(el) => this.sidebar = el} className={sidebarClassName} onClick={this.onSidebarClick}>
 
                     <ScrollPanel ref={(el) => this.layoutMenuScroller = el} style={{height:'100%'}}>
+
                         <div className="layout-sidebar-scroll-content" >
-                            <div className="layout-logo" onClick={e=> window.location=''}>
-                                <img alt="Logo" src={logo} />
+                            <div className="layout-logo" onClick={e=> window.location=''} style={{'cursor':'pointer'}}>
+                                <span style={{'color':'white','fontWeight':'bold', 'fontSize':'1.5em'}}>Tienda el Baratón</span>
                             </div>
                             <br/>
                             <AppMenu model={this.menu} onMenuItemClick={this.onMenuItemClick} />
@@ -154,9 +158,9 @@ class App extends Component {
 
                 <div className="layout-main">
                     <Route path="/" exact component={Dashboard} />
+                    <Route path="/carrito/ver" exact component={Cart} />
+                    <Route path="/:subId" exact component={ProductTable} />
                 </div>
-
-
             </div>
         );
     }
