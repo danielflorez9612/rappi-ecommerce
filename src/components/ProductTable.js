@@ -42,21 +42,6 @@ class ProductTable extends Component{
     showSuccess() {
         this.growl.show({severity: 'success', summary: 'Producto agregado', detail: 'Este producto se agregó a tu carrito'});
     }
-    renderBuy(item) {
-        if(CartService.cart.has(item.id)){
-            return (
-                <Button label="En el carrito" className="p-button-success" disabled={true}/>
-            );
-        } else if(item.available){
-            return (
-                <Button label="Agregar al carrito" icon="pi pi-plus" onClick={(e)=>this.addItemToCart(item.id)}/>
-            );
-        } else {
-            return (
-                <Button label="No disponible" className="p-button-danger" disabled={true}/>
-            );
-        }
-    }
     renderBuyGrid(item) {
         if(CartService.cart.has(item.id)){
             return (
@@ -110,45 +95,29 @@ class ProductTable extends Component{
             this.refreshList(nextProps.match.params['subId']);
         }
     }
-    itemTemplate(item, layout) {
+    itemTemplate(item) {
         if (!item) {
             return null;
         }
         let src = "assets/demo/images/gift.png";
         const imageStyle = {height:100+'px', width: 100+'px'};
-        if (layout === 'list') {
-            return (
-                <div className="p-g" style={{padding: '2em', borderBottom: '1px solid #d9d9d9'}}>
-                    <div className="p-g-12 p-md-3">
-                        <img src={src} alt='gift' style={imageStyle}/>
-                    </div>
-                    <div className="p-g-12 p-md-8 car-details">
-                        <div className="p-g">
-                            <div className="p-g-12 p-sm-12" style={{'fontWeight':'bold','fontSize':'1.5em'}}>{item.name}</div>
+        const header = (
+            <div>
+                <b>{item.name}</b><br/>
+                <span style={{'fontSize':'0.8em'}}>{item.quantity} unidades</span>
+            </div>
 
-                            <div className="p-g-2 p-sm-6">Cantidad:</div>
-                            <div className="p-g-10 p-sm-6">{item.quantity}</div>
-
-                            <div className="p-g-2 p-sm-6">Precio:</div>
-                            <div className="p-g-10 p-sm-6">{item.price}</div>
-                        </div>
-                    </div>
-                    {this.renderBuy(item)}
-                </div>
-            );
-        }
-
-        if (layout === 'grid') {
-            return (
-                <div style={{ padding: '.5em' }} className="p-g-12 p-md-3">
-                    <Panel header={item.name} style={{ textAlign: 'center' }}>
-                        <img src={src} alt='gift' style={imageStyle} />
-                        <div className="car-detail">{item.price}</div>
-                        {this.renderBuyGrid(item)}
-                    </Panel>
-                </div>
-            );
-        }
+        );
+        return (
+            <div style={{ padding: '.5em' }} className="p-g-12 p-md-3">
+                <Panel header={header} style={{ textAlign: 'center' }}>
+                    <img src={src} alt='gift' style={imageStyle} />
+                    <div className="car-detail">COP {item.price}</div>
+                    <br/>
+                    {this.renderBuyGrid(item)}
+                </Panel>
+            </div>
+        );
     }
     findInCategory(cat, sublevel) {
         if(parseInt(cat.id) === parseInt(sublevel)) {
@@ -157,7 +126,7 @@ class ProductTable extends Component{
             for(let i = 0;cat.sublevels && i< cat.sublevels.length; i++ ){
                 let found = this.findInCategory(cat.sublevels[i], sublevel);
                 if(found.length>0) {
-                    found.push(cat)
+                    found.push(cat);
                     return found;
                 }
             }
@@ -204,14 +173,14 @@ class ProductTable extends Component{
     render() {
         const header = (
             <div className="p-g">
-                <div className="p-g-12 p-md-4" style={{textAlign:'left'}}>
+                <div className="p-g-12 p-md-6" style={{textAlign:'left'}}>
                     <Dropdown options={this.state.sortOptions} value={this.state.sortKey} placeholder="Ordenar por" onChange={this.onSortChange} />
                 </div>
-                <div className="p-g-6 p-md-4">
-                    <div className='p-g'>
-                        <div className='p-g-12'><Dropdown options={this.state.filterOptions} value={this.state.filterKey} placeholder="Filtrar por" onChange={(e)=>this.onFilterChange(e)} /></div>
-                        <div className='p-g-12'>{this.showFilter()}</div>
-                    </div>
+                <div className="p-g-12 p-md-3" >
+                    <Dropdown options={this.state.filterOptions} value={this.state.filterKey} placeholder="Filtrar por" onChange={(e)=>this.onFilterChange(e)} />
+                </div>
+                <div className="p-g-12 p-md-3">
+                    {this.showFilter()}
                 </div>
             </div>
         );
@@ -220,9 +189,17 @@ class ProductTable extends Component{
                 <div className="p-g-12">
                     <div className="card card-w-title">
                         {this.breadCrumbShow()}
-                        <DataView ref={el => this.dv = el} value={this.state.dataViewValue} itemTemplate={this.itemTemplate} layout='grid'
+                        <DataView ref={el => this.dv = el}
+                                  value={this.state.dataViewValue}
+                                  itemTemplate={this.itemTemplate}
+                                  layout='grid'
                                   emptyMessage='No se encontraron datos'
-                                  paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
+                                  paginatorPosition={'both'}
+                                  paginator={true}
+                                  rows={10}
+                                  header={header}
+                                  sortOrder={this.state.sortOrder}
+                                  sortField={this.state.sortField}/>
                     </div>
                 </div>
                 <Growl ref={(el) => this.growl = el} />
@@ -264,7 +241,7 @@ class ProductTable extends Component{
             case 'price':
                 return (
                     <div>
-                        <h3>Rango: {Cart.moneyFormat(this.state.rangeValues[0])} - {Cart.moneyFormat(this.state.rangeValues[1])}</h3>
+                        <div>Rango: {Cart.moneyFormat(this.state.rangeValues[0])} - {Cart.moneyFormat(this.state.rangeValues[1])}</div>
                         <Slider value={this.state.rangeValues}
                                 range={true}
                                 animate={true}
