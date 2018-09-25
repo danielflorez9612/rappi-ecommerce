@@ -148,7 +148,7 @@ class App extends Component {
 
                         <div className="layout-sidebar-scroll-content" >
                             <div className="layout-logo" onClick={e=> window.location=''} style={{'cursor':'pointer'}}>
-                                <img alt="Logo" src={logo} />
+                                <span style={{'color':'white','fontWeight':'bold', 'fontSize':'1.5em'}}>Tienda el Baratón</span>
                             </div>
                             <br/>
                             <AppMenu model={this.menu} onMenuItemClick={this.onMenuItemClick} />
