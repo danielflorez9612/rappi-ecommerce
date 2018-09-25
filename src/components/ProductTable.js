@@ -8,6 +8,7 @@ import {products} from '../jsonfiles/products'
 import {categories} from '../jsonfiles/categories'
 import {BreadCrumb} from "primereact/breadcrumb";
 import {CartService} from "../service/CartService";
+import {Growl} from "primereact/growl";
 
 class ProductTable extends Component{
     constructor(props) {
@@ -24,10 +25,11 @@ class ProductTable extends Component{
                 {label: 'Más escasos primero', value: 'quantity'}
             ]
         };
-
-
         this.itemTemplate = this.itemTemplate.bind(this);
         this.onSortChange = this.onSortChange.bind(this);
+    }
+    showSuccess() {
+        this.growl.show({severity: 'success', summary: 'Producto agregado', detail: 'Este producto se agregó a tu carrito'});
     }
     renderBuy(item) {
         if(CartService.cart.has(item.id)){
@@ -36,7 +38,7 @@ class ProductTable extends Component{
             );
         } else if(item.available){
             return (
-                <Button label="Agregar al carrito" icon="pi pi-plus" onClick={(e)=>CartService.modifyItemInCart(item.id,1)}/>
+                <Button label="Agregar al carrito" icon="pi pi-plus" onClick={(e)=>this.addItemToCart(item.id)}/>
             );
         } else {
             return (
@@ -51,7 +53,7 @@ class ProductTable extends Component{
             );
         } else if(item.available){
             return (
-                <Button icon="pi pi-plus" onClick={(e)=>CartService.modifyItemInCart(item.id,1)}/>
+                <Button icon="pi pi-plus" onClick={(e)=>this.addItemToCart(item.id)}/>
             );
         } else {
             return (
@@ -183,11 +185,14 @@ class ProductTable extends Component{
                                   paginatorPosition={'both'} paginator={true} rows={10} header={header} sortOrder={this.state.sortOrder} sortField={this.state.sortField}/>
                     </div>
                 </div>
-
-
-
+                <Growl ref={(el) => this.growl = el} />
             </div>
         );
+    }
+
+    addItemToCart(id) {
+        CartService.modifyItemInCart(id,1);
+        this.showSuccess();
     }
 }
 export default ProductTable;

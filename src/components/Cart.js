@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button} from "primereact/button";
 import {CartService} from "../service/CartService";
 import {InputText} from "primereact/inputtext";
+import {Growl} from "primereact/growl";
 
 class Cart extends Component {
     constructor() {
@@ -20,6 +21,7 @@ class Cart extends Component {
     deleteFromCart(id) {
         CartService.deleteProduct(id);
         this.setState({cart:CartService.loadedCart});
+        this.showSuccess();
     }
     productTemplate(item) {
         if (!item) {
@@ -51,6 +53,9 @@ class Cart extends Component {
             </div>
         );
     }
+    showSuccess() {
+        this.growl.show({severity: 'success', summary: 'Producto eliminado', detail: 'Este producto fué eliminado de tu carrito'});
+    }
     printCar() {
         const cart = CartService.products;
         return (
@@ -64,7 +69,7 @@ class Cart extends Component {
     }
     render() {
         const totalQuantity = CartService.size;
-        const addedS = totalQuantity>1?'s':'';
+        const addedS = totalQuantity===1?'':'s';
         const totalStyle ={'fontWeight':'bold','fontSize':1.5+'em'};
         const total = Cart.moneyFormat(CartService.totalPrice);
         return (
@@ -100,6 +105,7 @@ class Cart extends Component {
                             </div>
                     </div>
                 </div>
+                <Growl ref={(el) => this.growl = el} />
             </div>
         );
     }
